@@ -1,28 +1,25 @@
-name: Cypress Tests with Dependency and Artifact Caching
+name: Cypress Tests with installation job
 
 on: [push]
 
 jobs:
-  # install:
-  # ....
-  cypress-run:
+  install:
     runs-on: ubuntu-latest
     container: cypress/browsers:node12.18.3-chrome87-ff82
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Download the build folders
-        uses: actions/download-artifact@v2
+      - name: Save build folder
+        uses: actions/upload-artifact@v2
         with:
           name: build
+          if-no-files-found: error
           path: build
 
-      # Install NPM dependencies, cache them correctly
-      # and run all Cypress tests
-      - name: Cypress run
+      - name: Cypress install
         uses: cypress-io/github-action@v2
         with:
-          # Specify Browser since container image is compile with Firefox
-          browser: firefox
+          # Disable running of tests within install job
+          runTests: false
           build: yarn build
