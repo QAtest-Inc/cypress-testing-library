@@ -8,7 +8,7 @@ on:
 jobs:
   build-client:
     name: Build
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout Source Files
@@ -21,19 +21,17 @@ jobs:
 
           path: client-config
 
-      - name: Use Node.js 14.x
+      - name: Use Node.js 16.x
         uses: actions/setup-node@v2
         with:
-          node-version: 14.x
+          node-version: 16.x
           cache: 'npm'
 
       - name: Install and Build
         run: |
           npm ci
           npm run build
-      - name: Move serve.json to Public Folder
-        run: cp client-config/serve.json client/public/serve.json
-
+      
       # We tar them for performance reasons - uploading a lot of files is slow.
       - name: Tar Files
         run: tar -cf client-artifact.tar client/public
@@ -52,12 +50,12 @@ jobs:
 
   cypress-run:
     name: Test
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     needs: build-client
     strategy:
       matrix:
         browsers: [chrome, firefox, electron]
-        node-version: [14.x]
+        node-version: [16.x]
         include:
           - browsers: electron
             spec: cypress/integration/learn/challenges/projects.js
